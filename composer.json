@@ -1,5 +1,5 @@
 {
-    "name": "symfony/cache",
+    "name": "okaeli/symfony-cache",
     "type": "library",
     "description": "Provides an extended PSR-6, PSR-16 (and tags) implementation",
     "keywords": ["caching", "psr6"],
