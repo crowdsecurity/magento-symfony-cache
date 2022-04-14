@@ -1,5 +1,5 @@
 {
-    "name": "okaeli/symfony-cache",
+    "name": "crowdsec/symfony-cache",
     "type": "library",
     "description": "Provides an extended PSR-6, PSR-16 (and tags) implementation",
     "keywords": ["caching", "psr6"],
