@@ -5,7 +5,6 @@
     "keywords": ["caching", "psr6"],
     "homepage": "https://symfony.com",
     "license": "MIT",
-    "version": "5.4.7.1",
     "authors": [
         {
             "name": "Nicolas Grekas",
@@ -56,6 +55,9 @@
         "exclude-from-classmap": [
             "/Tests/"
         ]
+    },
+    "replace": {
+        "symfony/cache": "5.4.7"
     },
     "minimum-stability": "dev"
 }
