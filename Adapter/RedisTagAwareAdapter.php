@@ -45,6 +45,9 @@ use Symfony\Component\Cache\Traits\RedisTrait;
  * @author Nicolas Grekas <p@tchwork.com>
  * @author André Rømcke <andre.romcke+symfony@gmail.com>
  */
+
+// We copy the 6.0.6 version on symfony/cache package
+
 class RedisTagAwareAdapter extends AbstractTagAwareAdapter
 {
     use RedisTrait;
@@ -56,17 +59,12 @@ class RedisTagAwareAdapter extends AbstractTagAwareAdapter
     private const DEFAULT_CACHE_TTL = 8640000;
 
     /**
-     * @var string|null detected eviction policy used on Redis server
+     * detected eviction policy used on Redis server.
      */
-    private $redisEvictionPolicy;
-    private $namespace;
+    private string $redisEvictionPolicy;
+    private string $namespace;
 
-    /**
-     * @param \Redis|\RedisArray|\RedisCluster|\Predis\ClientInterface|RedisProxy|RedisClusterProxy $redis           The redis client
-     * @param string                                                                                $namespace       The default namespace
-     * @param int                                                                                   $defaultLifetime The default lifetime
-     */
-    public function __construct($redis, string $namespace = '', int $defaultLifetime = 0, MarshallerInterface $marshaller = null)
+    public function __construct(\Redis|\RedisArray|\RedisCluster|\Predis\ClientInterface|RedisProxy|RedisClusterProxy $redis, string $namespace = '', int $defaultLifetime = 0, MarshallerInterface $marshaller = null)
     {
         if ($redis instanceof \Predis\ClientInterface && $redis->getConnection() instanceof ClusterInterface && !$redis->getConnection() instanceof PredisCluster) {
             throw new InvalidArgumentException(sprintf('Unsupported Predis cluster connection: only "%s" is, "%s" given.', PredisCluster::class, get_debug_type($redis->getConnection())));
@@ -297,7 +295,7 @@ EOLUA;
 
     private function getRedisEvictionPolicy(): string
     {
-        if (null !== $this->redisEvictionPolicy) {
+        if (isset($this->redisEvictionPolicy)) {
             return $this->redisEvictionPolicy;
         }
 

@@ -30,6 +30,9 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
  *
  * @internal
  */
+
+// We copy the 6.0.6 version on symfony/cache package
+
 abstract class AbstractTagAwareAdapter implements TagAwareAdapterInterface, TagAwareCacheInterface, LoggerAwareInterface, ResettableInterface
 {
     use AbstractAdapterTrait;
@@ -135,10 +138,8 @@ abstract class AbstractTagAwareAdapter implements TagAwareAdapterInterface, TagA
      * Removes multiple items from the pool and their corresponding tags.
      *
      * @param array $ids An array of identifiers that should be removed from the pool
-     *
-     * @return bool
      */
-    abstract protected function doDelete(array $ids);
+    abstract protected function doDelete(array $ids): bool;
 
     /**
      * Removes relations between tags and deleted items.
@@ -285,7 +286,7 @@ abstract class AbstractTagAwareAdapter implements TagAwareAdapterInterface, TagA
     /**
      * {@inheritdoc}
      */
-    public function invalidateTags(array $tags)
+    public function invalidateTags(array $tags): bool
     {
         if (empty($tags)) {
             return false;
