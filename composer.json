@@ -1,23 +1,19 @@
 {
     "name": "crowdsec/magento-symfony-cache",
     "type": "library",
-    "description": "Provides an extended PSR-6, PSR-16 (and tags) implementation",
+    "description": "Fork of symfony/cache package for Magento 2.4 compatibility",
     "keywords": ["caching", "psr6"],
-    "homepage": "https://symfony.com",
     "license": "MIT",
     "authors": [
         {
-            "name": "Nicolas Grekas",
-            "email": "p@tchwork.com"
-        },
-        {
-            "name": "Symfony Community",
-            "homepage": "https://symfony.com/contributors"
+            "name": "Julien Loizelet",
+            "homepage": "https://github.com/julienloizelet/",
+            "role": "Developer"
         }
     ],
     "require": {
         "php": ">=7.2.5 <8.0.2",
-        "symfony/cache": "5.4.7"
+        "symfony/cache": "5.4.11"
     },
     "minimum-stability": "dev"
 }
