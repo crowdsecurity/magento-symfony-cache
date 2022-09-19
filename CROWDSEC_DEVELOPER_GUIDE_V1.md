@@ -10,8 +10,8 @@ version to `>=7.2.5 <8.0.2`.
 
 - Work on the `branch-1.0.0-php-7` branch
 - Modify the `v5` version of `symfony/cache` in the `composer.json` file.
-- Update the `CROWDSEC_CHANGELOG_V1.md` file
+- Update the `CROWDSEC_CHANGELOG_V1.md` file by add some `v1.x.y` tag description
 - Add, commit and push your modification to the `branch-1.0.0-php-7` branch.
 - Create and push a tag for this new version:
-  - `git tag vx.y.z`
-  - `git push origin vx.y.z`
+  - `git tag v1.y.z`
+  - `git push origin v1.y.z`
