@@ -1,0 +1,62 @@
+# Developer guide for v2
+
+The source code of a `v2` version of this package should just be a copy of the original `v5` version of 
+`symfony/cache` package, but with some modification to make it compatible with PHP 8 signatures.
+
+Thus, we copy the source code of a `v5` version of `symfony/cache`. ANd we overwrite some files with the latest `v6` 
+version.
+
+## Steps for a new tag
+
+We suppose that you have a `crowdsec` remote configured with `git@github.com:crowdsecurity/magento-symfony-cache.
+git` as url and an `upstream` remote configured with `git@github.com:symfony/cache.git` : 
+
+- `git remote add upstream git@github.com:symfony/cache.git`
+- `git remote add crowdsec git@github.com:crowdsecurity/magento-symfony-cache.git`
+
+- Checkout on the `branch-2.0.0-php-8` branch of the `crowdsec` remote
+
+
+
+- In another folder, checkout to the latest `v5.x.y` `symfony/cache` tags:
+    - `cd symfony-cache-origin`
+    - `git checkout v5.x.y`
+
+
+- In this `crowdsec/magento-symfony-cache` source folder, search for `We copy the` and copy the result in `.
+  modified_files.txt` file:
+  - `grep  -rl "We copy the 6." * --exclude='*.md' | > .modified_files.txt`
+
+- Copy all files from  `symfony-cache-origin` except those from `modified_files.txt` file and other specified files
+  - `rsync -rv --exclude-from=./.modified_files.txt --exclude 'composer.json' --exclude '.idea' --exclude '.git' ../symfony-cache-origin/  ./`
+  
+
+
+
+
+- Replace each file with a copy of `symfony-cache-origin` file and add the comment `We copy the 6.0.x version on 
+  symfony/cache package`
+
+- In another folder, retrieve and checkout to the latest `v6.0` `symfony/cache` tags:
+    - Clone the symfony/cache package and fetch the tags:
+        - `mkdir symfony-cache-origin && cd symfony-cache-origin`
+        - `gh repo clone symfony/cache ./`
+        - `git fetch origin`
+        - `git checkout v6.0.x`
+
+
+- In this `crowdsec/magento-symfony-cache` source folder, copy all files from `modified_files.txt` and add a `We 
+  copy the 6.` comment
+
+
+
+
+- Update the `replace` part of the `composer.json` to match with the new `V5.x.y` replaced version of 
+  `symfony/cache` package.
+
+  
+- Update the `CROWDSEC_CHANGELOG_V2.md` file by add some `v2.x.y` tag description
+- Add, commit and push your modification to the `branch-2.0.0-php-8` branch.
+- Create and push a tag for this new version:
+  - `git tag v2.y.z`
+  - `git push origin v2.y.z`

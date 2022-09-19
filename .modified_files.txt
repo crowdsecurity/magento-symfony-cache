@@ -1,0 +1,13 @@
+Adapter/AbstractTagAwareAdapter.php
+Adapter/MemcachedAdapter.php
+Adapter/PhpFilesAdapter.php
+Adapter/TagAwareAdapter.php
+Adapter/TagAwareAdapterInterface.php
+Adapter/AbstractAdapter.php
+Adapter/RedisTagAwareAdapter.php
+Adapter/AdapterInterface.php
+CacheItem.php
+PruneableInterface.php
+Traits/RedisTrait.php
+Traits/FilesystemCommonTrait.php
+Traits/AbstractAdapterTrait.php
