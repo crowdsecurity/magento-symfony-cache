@@ -12,9 +12,7 @@
 namespace Symfony\Component\Cache\Traits;
 
 use Symfony\Component\Cache\Exception\InvalidArgumentException;
-
-// We copy the 6.0.6 version on symfony/cache package
-
+// We copy the 6.0.11 version on symfony/cache package
 /**
  * @author Nicolas Grekas <p@tchwork.com>
  *
@@ -28,7 +26,7 @@ trait FilesystemCommonTrait
     private function init(string $namespace, ?string $directory)
     {
         if (!isset($directory[0])) {
-            $directory = sys_get_temp_dir() . \DIRECTORY_SEPARATOR . 'symfony-cache';
+            $directory = sys_get_temp_dir().\DIRECTORY_SEPARATOR.'symfony-cache';
         } else {
             $directory = realpath($directory) ?: $directory;
         }
@@ -36,9 +34,9 @@ trait FilesystemCommonTrait
             if (preg_match('#[^-+_.A-Za-z0-9]#', $namespace, $match)) {
                 throw new InvalidArgumentException(sprintf('Namespace contains "%s" but only characters in [-+_.A-Za-z0-9] are allowed.', $match[0]));
             }
-            $directory .= \DIRECTORY_SEPARATOR . $namespace;
+            $directory .= \DIRECTORY_SEPARATOR.$namespace;
         } else {
-            $directory .= \DIRECTORY_SEPARATOR . '@';
+            $directory .= \DIRECTORY_SEPARATOR.'@';
         }
         if (!is_dir($directory)) {
             @mkdir($directory, 0777, true);
@@ -92,10 +90,10 @@ trait FilesystemCommonTrait
 
     private function write(string $file, string $data, int $expiresAt = null)
     {
-        set_error_handler(__CLASS__ . '::throwError');
+        set_error_handler(__CLASS__.'::throwError');
         try {
             if (!isset($this->tmp)) {
-                $this->tmp = $this->directory . bin2hex(random_bytes(6));
+                $this->tmp = $this->directory.bin2hex(random_bytes(6));
             }
             try {
                 $h = fopen($this->tmp, 'x');
@@ -104,7 +102,7 @@ trait FilesystemCommonTrait
                     throw $e;
                 }
 
-                $this->tmp = $this->directory . bin2hex(random_bytes(6));
+                $this->tmp = $this->directory.bin2hex(random_bytes(6));
                 $h = fopen($this->tmp, 'x');
             }
             fwrite($h, $data);
@@ -123,15 +121,14 @@ trait FilesystemCommonTrait
     private function getFile(string $id, bool $mkdir = false, string $directory = null)
     {
         // Use MD5 to favor speed over security, which is not an issue here
-        $hash = str_replace('/', '-', base64_encode(hash('md5', static::class . $id, true)));
-        $dir = ($directory ?? $this->directory) .
-               strtoupper($hash[0] . \DIRECTORY_SEPARATOR . $hash[1] . \DIRECTORY_SEPARATOR);
+        $hash = str_replace('/', '-', base64_encode(hash('md5', static::class.$id, true)));
+        $dir = ($directory ?? $this->directory).strtoupper($hash[0].\DIRECTORY_SEPARATOR.$hash[1].\DIRECTORY_SEPARATOR);
 
         if ($mkdir && !is_dir($dir)) {
             @mkdir($dir, 0777, true);
         }
 
-        return $dir . substr($hash, 2, 20);
+        return $dir.substr($hash, 2, 20);
     }
 
     private function getFileKey(string $file): string
@@ -148,18 +145,18 @@ trait FilesystemCommonTrait
         $chars = '+-ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
         for ($i = 0; $i < 38; ++$i) {
-            if (!is_dir($directory . $chars[$i])) {
+            if (!is_dir($directory.$chars[$i])) {
                 continue;
             }
 
             for ($j = 0; $j < 38; ++$j) {
-                if (!is_dir($dir = $directory . $chars[$i] . \DIRECTORY_SEPARATOR . $chars[$j])) {
+                if (!is_dir($dir = $directory.$chars[$i].\DIRECTORY_SEPARATOR.$chars[$j])) {
                     continue;
                 }
 
                 foreach (@scandir($dir, \SCANDIR_SORT_NONE) ?: [] as $file) {
                     if ('.' !== $file && '..' !== $file) {
-                        yield $dir . \DIRECTORY_SEPARATOR . $file;
+                        yield $dir.\DIRECTORY_SEPARATOR.$file;
                     }
                 }
             }
@@ -176,12 +173,12 @@ trait FilesystemCommonTrait
 
     public function __sleep(): array
     {
-        throw new \BadMethodCallException('Cannot serialize ' . __CLASS__);
+        throw new \BadMethodCallException('Cannot serialize '.__CLASS__);
     }
 
     public function __wakeup()
     {
-        throw new \BadMethodCallException('Cannot unserialize ' . __CLASS__);
+        throw new \BadMethodCallException('Cannot unserialize '.__CLASS__);
     }
 
     public function __destruct()

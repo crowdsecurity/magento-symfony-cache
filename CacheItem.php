@@ -8,14 +8,17 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-// We copy the 6.0.6 version on symfony/cache package
 
 namespace Symfony\Component\Cache;
+
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Cache\Exception\InvalidArgumentException;
 use Symfony\Component\Cache\Exception\LogicException;
 use Symfony\Contracts\Cache\ItemInterface;
-
+// We copy the 6.0.11 version on symfony/cache package
+/**
+ * @author Nicolas Grekas <p@tchwork.com>
+ */
 final class CacheItem implements ItemInterface
 {
     private const METADATA_EXPIRY_OFFSET = 1527506807;
@@ -171,7 +174,7 @@ final class CacheItem implements ItemInterface
         } else {
             $replace = [];
             foreach ($context as $k => $v) {
-                if (is_scalar($v)) {
+                if (\is_scalar($v)) {
                     $replace['{'.$k.'}'] = $v;
                 }
             }
@@ -179,5 +182,3 @@ final class CacheItem implements ItemInterface
         }
     }
 }
-
-

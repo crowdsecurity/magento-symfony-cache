@@ -25,7 +25,7 @@ use Symfony\Component\Cache\Marshaller\TagAwareMarshaller;
 use Symfony\Component\Cache\Traits\RedisClusterProxy;
 use Symfony\Component\Cache\Traits\RedisProxy;
 use Symfony\Component\Cache\Traits\RedisTrait;
-
+// We copy the 6.0.11 version on symfony/cache package
 /**
  * Stores tag id <> cache id relationship as a Redis Set.
  *
@@ -45,9 +45,6 @@ use Symfony\Component\Cache\Traits\RedisTrait;
  * @author Nicolas Grekas <p@tchwork.com>
  * @author André Rømcke <andre.romcke+symfony@gmail.com>
  */
-
-// We copy the 6.0.6 version on symfony/cache package
-
 class RedisTagAwareAdapter extends AbstractTagAwareAdapter
 {
     use RedisTrait;

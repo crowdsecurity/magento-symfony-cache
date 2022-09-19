@@ -15,9 +15,7 @@ use Symfony\Component\Cache\Exception\CacheException;
 use Symfony\Component\Cache\Exception\InvalidArgumentException;
 use Symfony\Component\Cache\Marshaller\DefaultMarshaller;
 use Symfony\Component\Cache\Marshaller\MarshallerInterface;
-
-// We copy the 6.0.6 version on symfony/cache package
-
+// We copy the 6.0.11 version on symfony/cache package
 /**
  * @author Rob Frawley 2nd <rmf@src.run>
  * @author Nicolas Grekas <p@tchwork.com>
@@ -58,8 +56,7 @@ class MemcachedAdapter extends AbstractAdapter
     public function __construct(\Memcached $client, string $namespace = '', int $defaultLifetime = 0, MarshallerInterface $marshaller = null)
     {
         if (!static::isSupported()) {
-            throw new CacheException('Memcached ' . (\PHP_VERSION_ID >= 80100 ? '> 3.1.5' : '>= 2.2.0') .
-                                     ' is required.');
+            throw new CacheException('Memcached '.(\PHP_VERSION_ID >= 80100 ? '> 3.1.5' : '>= 2.2.0').' is required.');
         }
         if ('Memcached' === \get_class($client)) {
             $opt = $client->getOption(\Memcached::OPT_SERIALIZER);
@@ -79,8 +76,7 @@ class MemcachedAdapter extends AbstractAdapter
 
     public static function isSupported()
     {
-        return \extension_loaded('memcached') &&
-               version_compare(phpversion('memcached'), \PHP_VERSION_ID >= 80100 ? '3.1.6' : '2.2.0', '>=');
+        return \extension_loaded('memcached') && version_compare(phpversion('memcached'), \PHP_VERSION_ID >= 80100 ? '3.1.6' : '2.2.0', '>=');
     }
 
     /**
@@ -104,12 +100,9 @@ class MemcachedAdapter extends AbstractAdapter
             throw new InvalidArgumentException(sprintf('MemcachedAdapter::createClient() expects array or string as first argument, "%s" given.', get_debug_type($servers)));
         }
         if (!static::isSupported()) {
-            throw new CacheException('Memcached ' . (\PHP_VERSION_ID >= 80100 ? '> 3.1.5' : '>= 2.2.0') .
-                                     ' is required.');
+            throw new CacheException('Memcached '.(\PHP_VERSION_ID >= 80100 ? '> 3.1.5' : '>= 2.2.0').' is required.');
         }
-        set_error_handler(function ($type, $msg, $file, $line) {
-            throw new \ErrorException($msg, 0, $type, $file, $line);
-        });
+        set_error_handler(function ($type, $msg, $file, $line) { throw new \ErrorException($msg, 0, $type, $file, $line); });
         try {
             $options += static::DEFAULT_CLIENT_OPTIONS;
             $client = new \Memcached($options['persistent_id']);
@@ -124,14 +117,13 @@ class MemcachedAdapter extends AbstractAdapter
                 if (!str_starts_with($dsn, 'memcached:')) {
                     throw new InvalidArgumentException(sprintf('Invalid Memcached DSN: "%s" does not start with "memcached:".', $dsn));
                 }
-                $params =
-                    preg_replace_callback('#^memcached:(//)?(?:([^@]*+)@)?#', function ($m) use (&$username, &$password) {
-                        if (!empty($m[2])) {
-                            [$username, $password] = explode(':', $m[2], 2) + [1 => null];
-                        }
+                $params = preg_replace_callback('#^memcached:(//)?(?:([^@]*+)@)?#', function ($m) use (&$username, &$password) {
+                    if (!empty($m[2])) {
+                        [$username, $password] = explode(':', $m[2], 2) + [1 => null];
+                    }
 
-                        return 'file:' . ($m[1] ?? '');
-                    }, $dsn);
+                    return 'file:'.($m[1] ?? '');
+                }, $dsn);
                 if (false === $params = parse_url($params)) {
                     throw new InvalidArgumentException(sprintf('Invalid Memcached DSN: "%s".', $dsn));
                 }
@@ -145,9 +137,9 @@ class MemcachedAdapter extends AbstractAdapter
                         }
                         foreach ($hosts as $host => $weight) {
                             if (false === $port = strrpos($host, ':')) {
-                                $hosts[$host] = [$host, 11211, (int)$weight];
+                                $hosts[$host] = [$host, 11211, (int) $weight];
                             } else {
-                                $hosts[$host] = [substr($host, 0, $port), (int)substr($host, 1 + $port), (int)$weight];
+                                $hosts[$host] = [substr($host, 0, $port), (int) substr($host, 1 + $port), (int) $weight];
                             }
                         }
                         $hosts = array_values($hosts);
@@ -189,8 +181,7 @@ class MemcachedAdapter extends AbstractAdapter
             $client->setOption(\Memcached::OPT_BINARY_PROTOCOL, true);
             $client->setOption(\Memcached::OPT_NO_BLOCK, true);
             $client->setOption(\Memcached::OPT_TCP_NODELAY, true);
-            if (!\array_key_exists('LIBKETAMA_COMPATIBLE', $options) &&
-                !\array_key_exists(\Memcached::OPT_LIBKETAMA_COMPATIBLE, $options)) {
+            if (!\array_key_exists('LIBKETAMA_COMPATIBLE', $options) && !\array_key_exists(\Memcached::OPT_LIBKETAMA_COMPATIBLE, $options)) {
                 $client->setOption(\Memcached::OPT_LIBKETAMA_COMPATIBLE, true);
             }
             foreach ($options as $name => $value) {
@@ -198,12 +189,12 @@ class MemcachedAdapter extends AbstractAdapter
                     continue;
                 }
                 if ('HASH' === $name || 'SERIALIZER' === $name || 'DISTRIBUTION' === $name) {
-                    $value = \constant('Memcached::' . $name . '_' . strtoupper($value));
+                    $value = \constant('Memcached::'.$name.'_'.strtoupper($value));
                 }
                 unset($options[$name]);
 
-                if (\defined('Memcached::OPT_' . $name)) {
-                    $options[\constant('Memcached::OPT_' . $name)] = $value;
+                if (\defined('Memcached::OPT_'.$name)) {
+                    $options[\constant('Memcached::OPT_'.$name)] = $value;
                 }
             }
             $client->setOptions($options);
@@ -220,7 +211,7 @@ class MemcachedAdapter extends AbstractAdapter
                     if (1 < \count($server)) {
                         $server = array_values($server);
                         unset($server[2]);
-                        $server[1] = (int)$server[1];
+                        $server[1] = (int) $server[1];
                     }
                     $newServers[] = $server;
                 }
@@ -293,8 +284,7 @@ class MemcachedAdapter extends AbstractAdapter
      */
     protected function doHave(string $id): bool
     {
-        return false !== $this->getClient()->get(self::encodeKey($id)) ||
-               $this->checkResultCode(\Memcached::RES_SUCCESS === $this->client->getResultCode());
+        return false !== $this->getClient()->get(self::encodeKey($id)) || $this->checkResultCode(\Memcached::RES_SUCCESS === $this->client->getResultCode());
     }
 
     /**
@@ -329,7 +319,7 @@ class MemcachedAdapter extends AbstractAdapter
             return $result;
         }
 
-        throw new CacheException('MemcachedAdapter client error: ' . strtolower($this->client->getResultMessage()));
+        throw new CacheException('MemcachedAdapter client error: '.strtolower($this->client->getResultMessage()));
     }
 
     private function getClient(): \Memcached
@@ -342,7 +332,7 @@ class MemcachedAdapter extends AbstractAdapter
         if (\Memcached::SERIALIZER_PHP !== $opt && \Memcached::SERIALIZER_IGBINARY !== $opt) {
             throw new CacheException('MemcachedAdapter: "serializer" option must be "php" or "igbinary".');
         }
-        if ('' !== $prefix = (string)$this->lazyClient->getOption(\Memcached::OPT_PREFIX_KEY)) {
+        if ('' !== $prefix = (string) $this->lazyClient->getOption(\Memcached::OPT_PREFIX_KEY)) {
             throw new CacheException(sprintf('MemcachedAdapter: "prefix_key" option must be empty when using proxified connections, "%s" given.', $prefix));
         }
 

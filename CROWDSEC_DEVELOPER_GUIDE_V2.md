@@ -8,47 +8,57 @@ version.
 
 ## Steps for a new tag
 
-We suppose that you have a `crowdsec` remote configured with `git@github.com:crowdsecurity/magento-symfony-cache.
-git` as url and an `upstream` remote configured with `git@github.com:symfony/cache.git` : 
+We will use the following structure as example.
 
-- `git remote add upstream git@github.com:symfony/cache.git`
-- `git remote add crowdsec git@github.com:crowdsecurity/magento-symfony-cache.git`
+```
+crowdsec
+│   
+│ 
+│
+└───magento-symfony-cache
+│   │   
+│   │ (Cloned sources of this repo)
+│   
+└───symfony-cache-origin
+    │   
+    │(Cloned sources of git@github.com:symfony/cache.git repo)
+         
+```
 
-- Checkout on the `branch-2.0.0-php-8` branch of the `crowdsec` remote
 
 
+- In the `magento-symfony-cache`, checkout on the `branch-2.0.0-php-8` branch of the `crowdsec` remote
 
-- In another folder, checkout to the latest `v5.x.y` `symfony/cache` tags:
+- In the `symfony-cache-origin` folder, checkout to the latest `v5.x.y` `symfony/cache` tags:
     - `cd symfony-cache-origin`
     - `git checkout v5.x.y`
-
 
 - In this `crowdsec/magento-symfony-cache` source folder, search for `We copy the` and copy the result in `.
   modified_files.txt` file:
   - `grep  -rl "We copy the 6." * --exclude='*.md' | > .modified_files.txt`
 
-- Copy all files from  `symfony-cache-origin` except those from `modified_files.txt` file and other specified files
-  - `rsync -rv --exclude-from=./.modified_files.txt --exclude 'composer.json' --exclude '.idea' --exclude '.git' ../symfony-cache-origin/  ./`
-  
+- Copy all files from  `symfony-cache-origin` except those from `modified_files.txt` file and other specified files:
+
+```bash
+rsync -rv --exclude-from=./.modified_files.txt --exclude 'composer.json' --exclude '.idea' --exclude '.git' ../symfony-cache-origin/  ./
+```
+
+- Commit modification with some message like `feat(*): Update files to 5.x.y version of symfony/cache`
+
+- In the `symfony-cache-origin` folder, retrieve and checkout to the latest `v6.0` `symfony/cache` tags:
+  - `git fetch origin`
+  - `git checkout v6.0.x`
 
 
+- Replace each file with a copy of `symfony-cache-origin` file 
 
+```bash
+rsync -rv --files-from=./.modified_files.txt  --exclude '.git' ../symfony-cache-origin/  ./
+```
 
-- Replace each file with a copy of `symfony-cache-origin` file and add the comment `We copy the 6.0.x version on 
-  symfony/cache package`
+- For each modified files, add the comment `We copy the 6.0.x version on symfony/cache package`
 
-- In another folder, retrieve and checkout to the latest `v6.0` `symfony/cache` tags:
-    - Clone the symfony/cache package and fetch the tags:
-        - `mkdir symfony-cache-origin && cd symfony-cache-origin`
-        - `gh repo clone symfony/cache ./`
-        - `git fetch origin`
-        - `git checkout v6.0.x`
-
-
-- In this `crowdsec/magento-symfony-cache` source folder, copy all files from `modified_files.txt` and add a `We 
-  copy the 6.` comment
-
-
+- Commit modification with some message like `feat(*): Update specifics files to 6.0.y version of symfony/cache`
 
 
 - Update the `replace` part of the `composer.json` to match with the new `V5.x.y` replaced version of 

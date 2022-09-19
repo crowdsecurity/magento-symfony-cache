@@ -16,9 +16,7 @@ use Symfony\Component\Cache\CacheItem;
 
 // Help opcache.preload discover always-needed symbols
 class_exists(CacheItem::class);
-
-// We copy the 6.0.6 version on symfony/cache package
-
+// We copy the 6.0.11 version on symfony/cache package
 /**
  * Interface for adapters managing instances of Symfony's CacheItem.
  *

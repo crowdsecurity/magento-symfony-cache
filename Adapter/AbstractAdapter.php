@@ -19,9 +19,7 @@ use Symfony\Component\Cache\ResettableInterface;
 use Symfony\Component\Cache\Traits\AbstractAdapterTrait;
 use Symfony\Component\Cache\Traits\ContractsTrait;
 use Symfony\Contracts\Cache\CacheInterface;
-
-// We copy the 6.0.6 version on symfony/cache package
-
+// We copy the 6.0.11 version on symfony/cache package
 /**
  * @author Nicolas Grekas <p@tchwork.com>
  */
@@ -40,11 +38,10 @@ abstract class AbstractAdapter implements AdapterInterface, CacheInterface, Logg
 
     protected function __construct(string $namespace = '', int $defaultLifetime = 0)
     {
-        $this->namespace = '' === $namespace ? '' : CacheItem::validateKey($namespace) . static::NS_SEPARATOR;
+        $this->namespace = '' === $namespace ? '' : CacheItem::validateKey($namespace).static::NS_SEPARATOR;
         $this->defaultLifetime = $defaultLifetime;
         if (null !== $this->maxIdLength && \strlen($namespace) > $this->maxIdLength - 24) {
-            throw new InvalidArgumentException(sprintf('Namespace must be %d chars max, %d given ("%s").', $this->maxIdLength -
-                                                                                                           24, \strlen($namespace), $namespace));
+            throw new InvalidArgumentException(sprintf('Namespace must be %d chars max, %d given ("%s").', $this->maxIdLength - 24, \strlen($namespace), $namespace));
         }
         self::$createCacheItem ?? self::$createCacheItem = \Closure::bind(
             static function ($key, $value, $isHit) {
@@ -55,8 +52,7 @@ abstract class AbstractAdapter implements AdapterInterface, CacheInterface, Logg
                 // Detect wrapped values that encode for their expiry and creation duration
                 // For compactness, these values are packed in the key of an array using
                 // magic numbers in the form 9D-..-..-..-..-00-..-..-..-5F
-                if (\is_array($v) && 1 === \count($v) && 10 === \strlen($k = (string)array_key_first($v)) &&
-                    "\x9D" === $k[0] && "\0" === $k[5] && "\x5F" === $k[9]) {
+                if (\is_array($v) && 1 === \count($v) && 10 === \strlen($k = (string) array_key_first($v)) && "\x9D" === $k[0] && "\0" === $k[5] && "\x5F" === $k[9]) {
                     $item->value = $v[$k];
                     $v = unpack('Ve/Nc', substr($k, 1, -1));
                     $item->metadata[CacheItem::METADATA_EXPIRY] = $v['e'] + CacheItem::METADATA_EXPIRY_OFFSET;
@@ -75,12 +71,12 @@ abstract class AbstractAdapter implements AdapterInterface, CacheInterface, Logg
                 $expiredIds = [];
 
                 foreach ($deferred as $key => $item) {
-                    $key = (string)$key;
+                    $key = (string) $key;
                     if (null === $item->expiry) {
                         $ttl = 0 < $defaultLifetime ? $defaultLifetime : 0;
                     } elseif (!$item->expiry) {
                         $ttl = 0;
-                    } elseif (0 >= $ttl = (int)(0.1 + $item->expiry - $now)) {
+                    } elseif (0 >= $ttl = (int) (0.1 + $item->expiry - $now)) {
                         $expiredIds[] = $getId($key);
                         continue;
                     }
@@ -88,10 +84,7 @@ abstract class AbstractAdapter implements AdapterInterface, CacheInterface, Logg
                         unset($metadata[CacheItem::METADATA_TAGS]);
                     }
                     // For compactness, expiry and creation duration are packed in the key of an array, using magic numbers as separators
-                    $byLifetime[$ttl][$getId($key)] = $metadata ? ["\x9D" . pack('VN', (int)(0.1 +
-                                                                                             $metadata[self::METADATA_EXPIRY] -
-                                                                                             self::METADATA_EXPIRY_OFFSET), $metadata[self::METADATA_CTIME]) .
-                                                                   "\x5F" => $item->value] : $item->value;
+                    $byLifetime[$ttl][$getId($key)] = $metadata ? ["\x9D".pack('VN', (int) (0.1 + $metadata[self::METADATA_EXPIRY] - self::METADATA_EXPIRY_OFFSET), $metadata[self::METADATA_CTIME])."\x5F" => $item->value] : $item->value;
                 }
 
                 return $byLifetime;
@@ -117,8 +110,7 @@ abstract class AbstractAdapter implements AdapterInterface, CacheInterface, Logg
             return $opcache;
         }
 
-        if (\in_array(\PHP_SAPI, ['cli', 'phpdbg'], true) &&
-            !filter_var(ini_get('apc.enable_cli'), \FILTER_VALIDATE_BOOLEAN)) {
+        if (\in_array(\PHP_SAPI, ['cli', 'phpdbg'], true) && !filter_var(\ini_get('apc.enable_cli'), \FILTER_VALIDATE_BOOLEAN)) {
             return $opcache;
         }
 
@@ -155,8 +147,7 @@ abstract class AbstractAdapter implements AdapterInterface, CacheInterface, Logg
     public function commit(): bool
     {
         $ok = true;
-        $byLifetime =
-            (self::$mergeByLifetime)($this->deferred, $this->namespace, $expiredIds, \Closure::fromCallable([$this, 'getId']), $this->defaultLifetime);
+        $byLifetime = (self::$mergeByLifetime)($this->deferred, $this->namespace, $expiredIds, \Closure::fromCallable([$this, 'getId']), $this->defaultLifetime);
         $retry = $this->deferred = [];
 
         if ($expiredIds) {
@@ -164,8 +155,7 @@ abstract class AbstractAdapter implements AdapterInterface, CacheInterface, Logg
                 $this->doDelete($expiredIds);
             } catch (\Exception $e) {
                 $ok = false;
-                CacheItem::log($this->logger, 'Failed to delete expired items: ' .
-                                              $e->getMessage(), ['exception' => $e, 'cache-adapter' => get_debug_type($this)]);
+                CacheItem::log($this->logger, 'Failed to delete expired items: '.$e->getMessage(), ['exception' => $e, 'cache-adapter' => get_debug_type($this)]);
             }
         }
         foreach ($byLifetime as $lifetime => $values) {
@@ -181,12 +171,8 @@ abstract class AbstractAdapter implements AdapterInterface, CacheInterface, Logg
                     $ok = false;
                     $v = $values[$id];
                     $type = get_debug_type($v);
-                    $message = sprintf('Failed to save key "{key}" of type %s%s', $type, $e instanceof \Exception ?
-                        ': ' . $e->getMessage() : '.');
-                    CacheItem::log($this->logger, $message, ['key' => substr($id, \strlen($this->namespace)), 'exception' => $e
-                                                                                                                             instanceof
-                                                                                                                             \Exception ?
-                        $e : null, 'cache-adapter' => get_debug_type($this)]);
+                    $message = sprintf('Failed to save key "{key}" of type %s%s', $type, $e instanceof \Exception ? ': '.$e->getMessage() : '.');
+                    CacheItem::log($this->logger, $message, ['key' => substr($id, \strlen($this->namespace)), 'exception' => $e instanceof \Exception ? $e : null, 'cache-adapter' => get_debug_type($this)]);
                 }
             } else {
                 foreach ($values as $id => $v) {
@@ -208,16 +194,11 @@ abstract class AbstractAdapter implements AdapterInterface, CacheInterface, Logg
                 }
                 $ok = false;
                 $type = get_debug_type($v);
-                $message = sprintf('Failed to save key "{key}" of type %s%s', $type, $e instanceof \Exception ?
-                    ': ' . $e->getMessage() : '.');
-                CacheItem::log($this->logger, $message, ['key' => substr($id, \strlen($this->namespace)), 'exception' => $e
-                                                                                                                         instanceof
-                                                                                                                         \Exception ?
-                    $e : null, 'cache-adapter' => get_debug_type($this)]);
+                $message = sprintf('Failed to save key "{key}" of type %s%s', $type, $e instanceof \Exception ? ': '.$e->getMessage() : '.');
+                CacheItem::log($this->logger, $message, ['key' => substr($id, \strlen($this->namespace)), 'exception' => $e instanceof \Exception ? $e : null, 'cache-adapter' => get_debug_type($this)]);
             }
         }
 
         return $ok;
     }
 }
-

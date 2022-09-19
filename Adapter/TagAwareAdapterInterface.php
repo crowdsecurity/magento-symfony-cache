@@ -12,15 +12,12 @@
 namespace Symfony\Component\Cache\Adapter;
 
 use Psr\Cache\InvalidArgumentException;
-
+// We copy the 6.0.11 version on symfony/cache package
 /**
  * Interface for invalidating cached items using tags.
  *
  * @author Nicolas Grekas <p@tchwork.com>
  */
-
-// We copy the 6.0.6 version on symfony/cache package
-
 interface TagAwareAdapterInterface extends AdapterInterface
 {
     /**

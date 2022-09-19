@@ -16,9 +16,7 @@ use Symfony\Component\Cache\Exception\InvalidArgumentException;
 use Symfony\Component\Cache\PruneableInterface;
 use Symfony\Component\Cache\Traits\FilesystemCommonTrait;
 use Symfony\Component\VarExporter\VarExporter;
-
-// We copy the 6.0.6 version on symfony/cache package
-
+// We copy the 6.0.11 version on symfony/cache package
 /**
  * @author Piotr Stankowski <git@trakos.pl>
  * @author Nicolas Grekas <p@tchwork.com>
@@ -60,10 +58,7 @@ class PhpFilesAdapter extends AbstractAdapter implements PruneableInterface
     {
         self::$startTime = self::$startTime ?? $_SERVER['REQUEST_TIME'] ?? time();
 
-        return \function_exists('opcache_invalidate') &&
-               filter_var(ini_get('opcache.enable'), \FILTER_VALIDATE_BOOLEAN) &&
-               (!\in_array(\PHP_SAPI, ['cli', 'phpdbg'], true) ||
-                filter_var(ini_get('opcache.enable_cli'), \FILTER_VALIDATE_BOOLEAN));
+        return \function_exists('opcache_invalidate') && filter_var(\ini_get('opcache.enable'), \FILTER_VALIDATE_BOOLEAN) && (!\in_array(\PHP_SAPI, ['cli', 'phpdbg'], true) || filter_var(\ini_get('opcache.enable_cli'), \FILTER_VALIDATE_BOOLEAN));
     }
 
     public function prune(): bool
@@ -236,7 +231,7 @@ class PhpFilesAdapter extends AbstractAdapter implements PruneableInterface
                     $isStaticValue = false;
                 }
                 $value = var_export($value, true);
-            } elseif (!is_scalar($value)) {
+            } elseif (!\is_scalar($value)) {
                 throw new InvalidArgumentException(sprintf('Cache key "%s" has non-serializable "%s" value.', $key, get_debug_type($value)));
             } else {
                 $value = var_export($value, true);
@@ -251,8 +246,7 @@ class PhpFilesAdapter extends AbstractAdapter implements PruneableInterface
             } else {
                 // We cannot use a closure here because of https://bugs.php.net/76982
                 $value = str_replace('\Symfony\Component\VarExporter\Internal\\', '', $value);
-                $value =
-                    "namespace Symfony\Component\VarExporter\Internal;\n\nreturn \$getExpiry ? {$expiry} : {$value};";
+                $value = "namespace Symfony\Component\VarExporter\Internal;\n\nreturn \$getExpiry ? {$expiry} : {$value};";
             }
 
             $file = $this->files[$key] = $this->getFile($key, true);

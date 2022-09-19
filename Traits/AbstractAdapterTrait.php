@@ -15,9 +15,7 @@ use Psr\Cache\CacheItemInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\Cache\CacheItem;
 use Symfony\Component\Cache\Exception\InvalidArgumentException;
-
-// We copy the 6.0.6 version on symfony/cache package
-
+// We copy the 6.0.11 version on symfony/cache package
 /**
  * @author Nicolas Grekas <p@tchwork.com>
  *
@@ -82,8 +80,8 @@ trait AbstractAdapterTrait
     /**
      * Persists several cache items immediately.
      *
-     * @param array $values The values to cache, indexed by their cache identifier
-     * @param int $lifetime The lifetime of the cached values, 0 for persisting until manual cleaning
+     * @param array $values   The values to cache, indexed by their cache identifier
+     * @param int   $lifetime The lifetime of the cached values, 0 for persisting until manual cleaning
      *
      * @return array|bool The identifiers that failed to be cached or a boolean stating if caching succeeded or not
      */
@@ -103,8 +101,7 @@ trait AbstractAdapterTrait
         try {
             return $this->doHave($id);
         } catch (\Exception $e) {
-            CacheItem::log($this->logger, 'Failed to check if key "{key}" is cached: ' .
-                                          $e->getMessage(), ['key' => $key, 'exception' => $e, 'cache-adapter' => get_debug_type($this)]);
+            CacheItem::log($this->logger, 'Failed to check if key "{key}" is cached: '.$e->getMessage(), ['key' => $key, 'exception' => $e, 'cache-adapter' => get_debug_type($this)]);
 
             return false;
         }
@@ -118,35 +115,32 @@ trait AbstractAdapterTrait
         $this->deferred = [];
         if ($cleared = $this->versioningIsEnabled) {
             if ('' === $namespaceVersionToClear = $this->namespaceVersion) {
-                foreach ($this->doFetch([static::NS_SEPARATOR . $this->namespace]) as $v) {
+                foreach ($this->doFetch([static::NS_SEPARATOR.$this->namespace]) as $v) {
                     $namespaceVersionToClear = $v;
                 }
             }
-            $namespaceToClear = $this->namespace . $namespaceVersionToClear;
+            $namespaceToClear = $this->namespace.$namespaceVersionToClear;
             $namespaceVersion = self::formatNamespaceVersion(mt_rand());
             try {
-                $e = $this->doSave([static::NS_SEPARATOR . $this->namespace => $namespaceVersion], 0);
+                $e = $this->doSave([static::NS_SEPARATOR.$this->namespace => $namespaceVersion], 0);
             } catch (\Exception $e) {
             }
             if (true !== $e && [] !== $e) {
                 $cleared = false;
-                $message =
-                    'Failed to save the new namespace' . ($e instanceof \Exception ? ': ' . $e->getMessage() : '.');
-                CacheItem::log($this->logger, $message, ['exception' => $e instanceof \Exception ? $e :
-                    null, 'cache-adapter' => get_debug_type($this)]);
+                $message = 'Failed to save the new namespace'.($e instanceof \Exception ? ': '.$e->getMessage() : '.');
+                CacheItem::log($this->logger, $message, ['exception' => $e instanceof \Exception ? $e : null, 'cache-adapter' => get_debug_type($this)]);
             } else {
                 $this->namespaceVersion = $namespaceVersion;
                 $this->ids = [];
             }
         } else {
-            $namespaceToClear = $this->namespace . $prefix;
+            $namespaceToClear = $this->namespace.$prefix;
         }
 
         try {
             return $this->doClear($namespaceToClear) || $cleared;
         } catch (\Exception $e) {
-            CacheItem::log($this->logger, 'Failed to clear the cache: ' .
-                                          $e->getMessage(), ['exception' => $e, 'cache-adapter' => get_debug_type($this)]);
+            CacheItem::log($this->logger, 'Failed to clear the cache: '.$e->getMessage(), ['exception' => $e, 'cache-adapter' => get_debug_type($this)]);
 
             return false;
         }
@@ -190,7 +184,7 @@ trait AbstractAdapterTrait
                 }
             } catch (\Exception $e) {
             }
-            $message = 'Failed to delete key "{key}"' . ($e instanceof \Exception ? ': ' . $e->getMessage() : '.');
+            $message = 'Failed to delete key "{key}"'.($e instanceof \Exception ? ': '.$e->getMessage() : '.');
             CacheItem::log($this->logger, $message, ['key' => $key, 'exception' => $e, 'cache-adapter' => get_debug_type($this)]);
             $ok = false;
         }
@@ -219,8 +213,7 @@ trait AbstractAdapterTrait
 
             return (self::$createCacheItem)($key, $value, $isHit);
         } catch (\Exception $e) {
-            CacheItem::log($this->logger, 'Failed to fetch key "{key}": ' .
-                                          $e->getMessage(), ['key' => $key, 'exception' => $e, 'cache-adapter' => get_debug_type($this)]);
+            CacheItem::log($this->logger, 'Failed to fetch key "{key}": '.$e->getMessage(), ['key' => $key, 'exception' => $e, 'cache-adapter' => get_debug_type($this)]);
         }
 
         return (self::$createCacheItem)($key, null, false);
@@ -246,8 +239,7 @@ trait AbstractAdapterTrait
         try {
             $items = $this->doFetch($ids);
         } catch (\Exception $e) {
-            CacheItem::log($this->logger, 'Failed to fetch items: ' .
-                                          $e->getMessage(), ['keys' => $keys, 'exception' => $e, 'cache-adapter' => get_debug_type($this)]);
+            CacheItem::log($this->logger, 'Failed to fetch items: '.$e->getMessage(), ['keys' => $keys, 'exception' => $e, 'cache-adapter' => get_debug_type($this)]);
             $items = [];
         }
         $ids = array_combine($ids, $keys);
@@ -315,12 +307,12 @@ trait AbstractAdapterTrait
 
     public function __sleep(): array
     {
-        throw new \BadMethodCallException('Cannot serialize ' . __CLASS__);
+        throw new \BadMethodCallException('Cannot serialize '.__CLASS__);
     }
 
     public function __wakeup()
     {
-        throw new \BadMethodCallException('Cannot unserialize ' . __CLASS__);
+        throw new \BadMethodCallException('Cannot unserialize '.__CLASS__);
     }
 
     public function __destruct()
@@ -344,8 +336,7 @@ trait AbstractAdapterTrait
                 yield $key => $f($key, $value, true);
             }
         } catch (\Exception $e) {
-            CacheItem::log($this->logger, 'Failed to fetch items: ' .
-                                          $e->getMessage(), ['keys' => array_values($keys), 'exception' => $e, 'cache-adapter' => get_debug_type($this)]);
+            CacheItem::log($this->logger, 'Failed to fetch items: '.$e->getMessage(), ['keys' => array_values($keys), 'exception' => $e, 'cache-adapter' => get_debug_type($this)]);
         }
 
         foreach ($keys as $key) {
@@ -357,28 +348,26 @@ trait AbstractAdapterTrait
     {
         if ($this->versioningIsEnabled && '' === $this->namespaceVersion) {
             $this->ids = [];
-            $this->namespaceVersion = '1' . static::NS_SEPARATOR;
+            $this->namespaceVersion = '1'.static::NS_SEPARATOR;
             try {
-                foreach ($this->doFetch([static::NS_SEPARATOR . $this->namespace]) as $v) {
+                foreach ($this->doFetch([static::NS_SEPARATOR.$this->namespace]) as $v) {
                     $this->namespaceVersion = $v;
                 }
                 $e = true;
-                if ('1' . static::NS_SEPARATOR === $this->namespaceVersion) {
+                if ('1'.static::NS_SEPARATOR === $this->namespaceVersion) {
                     $this->namespaceVersion = self::formatNamespaceVersion(time());
-                    $e = $this->doSave([static::NS_SEPARATOR . $this->namespace => $this->namespaceVersion], 0);
+                    $e = $this->doSave([static::NS_SEPARATOR.$this->namespace => $this->namespaceVersion], 0);
                 }
             } catch (\Exception $e) {
             }
             if (true !== $e && [] !== $e) {
-                $message =
-                    'Failed to save the new namespace' . ($e instanceof \Exception ? ': ' . $e->getMessage() : '.');
-                CacheItem::log($this->logger, $message, ['exception' => $e instanceof \Exception ? $e :
-                    null, 'cache-adapter' => get_debug_type($this)]);
+                $message = 'Failed to save the new namespace'.($e instanceof \Exception ? ': '.$e->getMessage() : '.');
+                CacheItem::log($this->logger, $message, ['exception' => $e instanceof \Exception ? $e : null, 'cache-adapter' => get_debug_type($this)]);
             }
         }
 
         if (\is_string($key) && isset($this->ids[$key])) {
-            return $this->namespace . $this->namespaceVersion . $this->ids[$key];
+            return $this->namespace.$this->namespaceVersion.$this->ids[$key];
         }
         \assert('' !== CacheItem::validateKey($key));
         $this->ids[$key] = $key;
@@ -388,14 +377,12 @@ trait AbstractAdapterTrait
         }
 
         if (null === $this->maxIdLength) {
-            return $this->namespace . $this->namespaceVersion . $key;
+            return $this->namespace.$this->namespaceVersion.$key;
         }
-        if (\strlen($id = $this->namespace . $this->namespaceVersion . $key) > $this->maxIdLength) {
+        if (\strlen($id = $this->namespace.$this->namespaceVersion.$key) > $this->maxIdLength) {
             // Use MD5 to favor speed over security, which is not an issue here
-            $this->ids[$key] = $id =
-                substr_replace(base64_encode(hash('md5', $key, true)), static::NS_SEPARATOR, -(\strlen($this->namespaceVersion) +
-                                                                                               2));
-            $id = $this->namespace . $this->namespaceVersion . $id;
+            $this->ids[$key] = $id = substr_replace(base64_encode(hash('md5', $key, true)), static::NS_SEPARATOR, -(\strlen($this->namespaceVersion) + 2));
+            $id = $this->namespace.$this->namespaceVersion.$id;
         }
 
         return $id;
@@ -406,7 +393,7 @@ trait AbstractAdapterTrait
      */
     public static function handleUnserializeCallback(string $class)
     {
-        throw new \DomainException('Class not found: ' . $class);
+        throw new \DomainException('Class not found: '.$class);
     }
 
     private static function formatNamespaceVersion(int $value): string
@@ -414,5 +401,3 @@ trait AbstractAdapterTrait
         return strtr(substr_replace(base64_encode(pack('V', $value)), static::NS_SEPARATOR, 5), '/', '_');
     }
 }
-
-

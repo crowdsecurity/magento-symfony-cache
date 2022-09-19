@@ -10,13 +10,10 @@
  */
 
 namespace Symfony\Component\Cache;
-
+// We copy the 6.0.11 version on symfony/cache package
 /**
  * Interface extends psr-6 and psr-16 caches to allow for pruning (deletion) of all expired cache items.
  */
-
-// We copy the 6.0.6 version on symfony/cache package
-
 interface PruneableInterface
 {
     public function prune(): bool;

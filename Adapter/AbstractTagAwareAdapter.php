@@ -18,7 +18,7 @@ use Symfony\Component\Cache\ResettableInterface;
 use Symfony\Component\Cache\Traits\AbstractAdapterTrait;
 use Symfony\Component\Cache\Traits\ContractsTrait;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
-
+// We copy the 6.0.11 version on symfony/cache package
 /**
  * Abstract for native TagAware adapters.
  *
@@ -30,9 +30,6 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
  *
  * @internal
  */
-
-// We copy the 6.0.6 version on symfony/cache package
-
 abstract class AbstractTagAwareAdapter implements TagAwareAdapterInterface, TagAwareCacheInterface, LoggerAwareInterface, ResettableInterface
 {
     use AbstractAdapterTrait;
