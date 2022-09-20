@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [2.2.0](https://github.com/crowdsecurity/magento-symfony-cache/releases/tag/v2.2.0) - 2022-09-19
+## [2.2.0](https://github.com/crowdsecurity/magento-symfony-cache/releases/tag/v2.2.0) - 2022-09-20
 [_Compare with previous release_](https://github.com/crowdsecurity/magento-symfony-cache/compare/v2.1.0...v2.2.0)
 ### Changed
 - Copy `symfony/cache` `5.4.11` files
