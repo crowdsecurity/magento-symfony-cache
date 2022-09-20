@@ -10,4 +10,5 @@ CacheItem.php
 PruneableInterface.php
 Traits/RedisTrait.php
 Traits/FilesystemCommonTrait.php
+Traits/ProxyTrait.php
 Traits/AbstractAdapterTrait.php
