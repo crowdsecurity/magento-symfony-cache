@@ -24,11 +24,9 @@ crowdsec
          
 ```
 
-- In the `magento-symfony-cache`, checkout to the `branch-2.0.0-php-8` branch
+- In the `magento-symfony-cache`, checkout to the `v2-php8` branch
 
 ### Copy of some `v5` files
-
-
 
 
 - In the `symfony-cache-origin` folder, checkout to the latest `v5.x.y` `symfony/cache` tags:
@@ -83,7 +81,7 @@ Magento 2 module to use the new tag of `crowdsec/magento-symfony-cache` that we 
 - Update the `CROWDSEC_CHANGELOG_V2.md` file by add some `v2.x.y` tag description
 
 
-- Add, commit and push your modification to the `branch-2.0.0-php-8` branch.
+- Add, commit and push your modification to the `v2-php8` branch.
 
 
 - Create and push a tag for this new version:
